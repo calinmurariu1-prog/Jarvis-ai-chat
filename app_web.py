@@ -105,7 +105,7 @@ if prompt or (ultimul_mesaj_e_user and prompt is None):
         )
 
         response = client.models.generate_content(
-            model='gemini-1.5-flash',
+            model='gemini-1.5-pro',
             contents=istoric_complet,
             config={'system_instruction': system_prompt}
         )
