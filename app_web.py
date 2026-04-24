@@ -5,20 +5,21 @@ import os
 
 st.set_page_config(page_title="Jarvis Legal AI", page_icon="⚖️", layout="centered")
 
-# --- ACEASTA ESTE PARTEA NOUĂ: MEMORIA ASCUNSĂ A LUI JARVIS ---
-@st.cache_data # Asta face ca legea să fie citită o singură dată și ținută minte
+# --- MEMORIA ASCUNSĂ A LUI JARVIS ---
+@st.cache_data 
 def incarca_legislatia():
-    # Verificăm dacă fișierul există pe GitHub
     if os.path.exists("legea_muncii.pdf"):
         cititor_lege = pypdf.PdfReader("legea_muncii.pdf")
         text_lege = ""
         for pagina in cititor_lege.pages:
-            text_lege += pagina.extract_text()
-        return text_lege
+            extras = pagina.extract_text()
+            if extras:
+                text_lege += extras
+        # SOLUȚIA PENTRU EROARE: Curățăm textul de caracterele problematice (forțăm UTF-8)
+        return text_lege.encode('utf-8', 'ignore').decode('utf-8')
     else:
         return "Eroare: Nu am găsit fișierul legea_muncii.pdf în sistem."
 
-# Încărcăm legea în fundal (utilizatorul nu vede asta)
 text_legislatie_baza = incarca_legislatia()
 # -------------------------------------------------------------
 
@@ -30,14 +31,18 @@ api_key = st.sidebar.text_input("Introdu cheia ta API Google Gemini:", type="pas
 
 st.markdown("---")
 st.markdown("### 1. Încarcă contractul tău (PDF)")
-# Aici clientul încarcă DOAR contractul lui, nu și legea
 fisier_incarcat = st.file_uploader("Trage contractul tău aici", type="pdf")
 
 if fisier_incarcat is not None:
     cititor_contract = pypdf.PdfReader(fisier_incarcat)
     text_contract = ""
     for pagina in cititor_contract.pages:
-        text_contract += pagina.extract_text()
+        extras = pagina.extract_text()
+        if extras:
+            text_contract += extras
+            
+    # SOLUȚIA PENTRU EROARE: Curățăm și textul contractului clientului
+    text_contract = text_contract.encode('utf-8', 'ignore').decode('utf-8')
         
     st.success("✅ Contractul tău a fost încărcat!")
         
@@ -54,7 +59,6 @@ if fisier_incarcat is not None:
                 try:
                     client = genai.Client(api_key=api_key)
                     
-                    # PROMPT-UL MAGIC: Aici combinăm legea ascunsă cu contractul clientului
                     prompt_final = f"""
                     Ești un avocat expert în dreptul muncii din România. 
                     Mai jos ai LEGISLAȚIA (Codul Muncii) și CONTRACTUL clientului.
@@ -79,4 +83,5 @@ if fisier_incarcat is not None:
                     st.info(response.text)
                     
                 except Exception as e:
-                    st.error(f"Eroare: {e}")
+                    st.error(f"Eroare AI: {e}")
+
