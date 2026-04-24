@@ -9,7 +9,7 @@ st.set_page_config(page_title="JARVIS AI", page_icon="🎙️", layout="wide")
 st.title("🎙️ JARVIS - Asistent Cybernetic")
 
 # Cheia ta API
-CHEIE_API = "st.secrets["GOOGLE_API_Key"]"
+CHEIE_API = st.secrets["GOOGLE_API_Key"]
 
 # Inițializăm memoria dacă nu există
 if "messages" not in st.session_state:
