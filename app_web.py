@@ -10,7 +10,7 @@ st.subheader("Asistentul tău pentru analiza contractelor")
 
 # 2. Bara laterală (Sidebar) pentru Securitate - Aici utilizatorul pune cheia API
 st.sidebar.header("Setări Conexiune")
-api_key = st.sidebar.text_input("Introdu cheia ta API Google Gemini:", type="password")
+api_key = st.sidebar.text_input("AIzaSyCC3xtCavzu1GJAa9TUU4IdOndCbwDGiuM", type="password")
 st.sidebar.markdown("*Nu ai o cheie? [Obține una gratuită aici](https://aistudio.google.com/app/apikey)*")
 
 # 3. Modulul de încărcare a contractului
